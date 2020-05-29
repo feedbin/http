@@ -42,6 +42,7 @@ module HTTP
     def initialize(opts = {}) # rubocop:disable Style/OptionHash
       @strict   = opts.fetch(:strict, true)
       @max_hops = opts.fetch(:max_hops, 5).to_i
+      @on_redirect = opts.fetch(:on_redirect, nil)
     end
 
     # Follows redirects until non-redirect response found
@@ -94,6 +95,8 @@ module HTTP
       end
 
       verb = :get if !SEE_OTHER_ALLOWED_VERBS.include?(verb) && 303 == code
+
+      @on_redirect.call @response, uri if @on_redirect.respond_to?(:call)
 
       @request.redirect(uri, verb)
     end
