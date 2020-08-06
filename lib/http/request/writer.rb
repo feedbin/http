@@ -34,7 +34,6 @@ module HTTP
       # Stream the request to a socket
       def stream
         add_headers
-        add_body_type_headers
         send_request
       end
 
@@ -42,14 +41,6 @@ module HTTP
       def connect_through_proxy
         add_headers
         write(join_headers)
-      end
-
-      # Adds the headers to the header array for the given request body we are working
-      # with
-      def add_body_type_headers
-        return if @headers[Headers::CONTENT_LENGTH] || chunked?
-
-        @request_header << "#{Headers::CONTENT_LENGTH}: #{@body.size}"
       end
 
       # Joins the headers specified in the request into a correctly formatted

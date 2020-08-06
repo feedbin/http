@@ -49,6 +49,10 @@ module HTTP
       :search
     ].freeze
 
+    METHODS_EXPECTING_BODY = [
+      :post, :put, :patch
+    ].freeze
+
     # Allowed schemes
     SCHEMES = %i[http https ws wss].freeze
 
@@ -92,8 +96,8 @@ module HTTP
 
       @proxy   = opts[:proxy] || {}
       @version = opts[:version] || "1.1"
-      @headers = prepare_headers(opts[:headers])
       @body    = prepare_body(opts[:body])
+      @headers = prepare_headers(opts[:headers])
     end
 
     # Returns new Request with updated uri
@@ -220,11 +224,23 @@ module HTTP
       body.is_a?(Request::Body) ? body : Request::Body.new(body)
     end
 
+    # Adds the headers to the header array for the given request body we are working
+    # with
+    def content_length(transfer_encoding)
+      return if transfer_encoding == "chunked"
+      return if @verb == :trace
+      return if !METHODS_EXPECTING_BODY.include?(@verb) && @body.size == 0
+
+      @body.size
+    end
+
     def prepare_headers(headers)
       headers = HTTP::Headers.coerce(headers || {})
+      length = content_length(headers[Headers::TRANSFER_ENCODING])
 
-      headers[Headers::HOST]        ||= default_host_header_value
-      headers[Headers::USER_AGENT]  ||= USER_AGENT
+      headers[Headers::HOST]           ||= default_host_header_value
+      headers[Headers::USER_AGENT]     ||= USER_AGENT
+      headers[Headers::CONTENT_LENGTH] ||= length unless length.nil?
 
       headers
     end
