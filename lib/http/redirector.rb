@@ -61,6 +61,7 @@ module HTTP
 
         # XXX(ixti): using `Array#inject` to return `nil` if no Location header.
         @request  = redirect_to(@response.headers.get(Headers::LOCATION).inject(:+))
+        @on_redirect.call @response, @request if @on_redirect.respond_to?(:call)
         @response = yield @request
       end
 
@@ -95,8 +96,6 @@ module HTTP
       end
 
       verb = :get if !SEE_OTHER_ALLOWED_VERBS.include?(verb) && 303 == code
-
-      @on_redirect.call @response, uri if @on_redirect.respond_to?(:call)
 
       @request.redirect(uri, verb)
     end
