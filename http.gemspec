@@ -28,9 +28,10 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = ">= 2.6"
 
   gem.add_runtime_dependency "addressable",    "~> 2.8"
+  gem.add_runtime_dependency "base64",         "~> 0.1"
   gem.add_runtime_dependency "http-cookie",    "~> 1.0"
   gem.add_runtime_dependency "http-form_data", "~> 2.2"
-  gem.add_runtime_dependency "llhttp-ffi",     "~> 0.4.0"
+  gem.add_runtime_dependency "llhttp-ffi",     "~> 0.5.0"
 
   gem.add_development_dependency "bundler", "~> 2.0"
 
@@ -38,7 +39,7 @@ Gem::Specification.new do |gem|
     "source_code_uri"       => "https://github.com/httprb/http",
     "wiki_uri"              => "https://github.com/httprb/http/wiki",
     "bug_tracker_uri"       => "https://github.com/httprb/http/issues",
-    "changelog_uri"         => "https://github.com/httprb/http/blob/v#{HTTP::VERSION}/CHANGES.md",
+    "changelog_uri"         => "https://github.com/httprb/http/blob/v#{HTTP::VERSION}/CHANGELOG.md",
     "rubygems_mfa_required" => "true"
   }
 end

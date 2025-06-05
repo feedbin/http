@@ -46,6 +46,9 @@ module HTTP
       reset_timer
     rescue IOError, SocketError, SystemCallError => e
       raise ConnectionError, "failed to connect: #{e}", e.backtrace
+    rescue TimeoutError
+      close
+      raise
     end
 
     # @see (HTTP::Response::Parser#status_code)
@@ -126,10 +129,14 @@ module HTTP
     # Close the connection
     # @return [void]
     def close
-      @socket.close unless @socket.closed?
+      @socket.close unless @socket&.closed?
 
       @pending_response = false
       @pending_request  = false
+    end
+
+    def finished_request?
+      !@pending_request && !@pending_response
     end
 
     # Whether we're keeping the conn alive
